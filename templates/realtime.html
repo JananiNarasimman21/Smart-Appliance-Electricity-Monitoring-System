@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Real-Time Electricity Monitoring</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .form-box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+        }
+
+        input {
+            padding: 12px;
+            width: 80%;
+            margin: 10px 0;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        .connect-btn {
+            padding: 12px 30px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .connect-btn:hover {
+            background: #2980b9;
+        }
+
+        .power-card {
+            background: linear-gradient(120deg, #ff9a9e, #fad0c4);
+            padding: 40px 20px;
+            border-radius: 15px;
+            color: white;
+            font-size: 25px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .value {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 10px 0 30px;
+        }
+
+        h3 {
+            margin: 10px 0 5px;
+            font-weight: normal;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>⚡ Real-Time Electricity Monitoring</h1>
+
+        <div class="form-box">
+            <input type="text" id="ip" placeholder="Smart Plug IP Address"><br>
+            <input type="email" id="email" placeholder="TP-Link Email"><br>
+            <input type="password" id="password" placeholder="Password"><br>
+            <button class="connect-btn" onclick="connectPlug()">Connect Smart Plug</button>
+        </div>
+
+        <div class="power-card">
+            <h3>Current Power</h3>
+            <div class="value" id="powerValue">0 W</div>
+
+            <h3>Total Energy</h3>
+            <div class="value" id="energyValue">0 kWh</div>
+
+            <h3>Electricity Cost</h3>
+            <div class="value" id="costValue">₹0</div>
+        </div>
+
+    </div>
+
+    <script>
+        let ip, email, password;
+        let timer = null;
+
+        function connectPlug() {
+            ip = document.getElementById("ip").value;
+            email = document.getElementById("email").value;
+            password = document.getElementById("password").value;
+
+            updatePower(); // immediate fetch
+
+            if (timer === null) {
+                timer = setInterval(updatePower, 5000); // update every 5 sec
+            }
+        }
+
+        function updatePower() {
+            fetch("/livepower", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `ip=${encodeURIComponent(ip)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        alert("Error: " + data.error);
+                        return;
+                    }
+
+                    // format numbers to 2-6 decimal places
+                    document.getElementById("powerValue").innerHTML = data.power.toFixed(2) + " W";
+                    document.getElementById("energyValue").innerHTML = data.energy.toFixed(6) + " kWh";
+                    document.getElementById("costValue").innerHTML = "₹" + data.cost.toFixed(2);
+                })
+                .catch(err => {
+                    console.log("Fetch error:", err);
+                });
+        }
+    </script>
+
+</body>
+
+</html>

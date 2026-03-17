@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Smart Energy Dashboard</title>
+
+<link rel="stylesheet" href="/static/style.css">
+
+<style>
+
+.hero{
+height:100vh;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+text-align:center;
+color:white;
+background:linear-gradient(120deg,#1f4037,#99f2c8);
+}
+
+.hero h1{
+font-size:50px;
+margin-bottom:10px;
+}
+
+.hero p{
+font-size:20px;
+max-width:700px;
+margin-bottom:30px;
+}
+
+.start-btn{
+padding:15px 40px;
+font-size:20px;
+border:none;
+border-radius:10px;
+background:#ff6b6b;
+color:white;
+cursor:pointer;
+}
+
+.features{
+display:flex;
+justify-content:center;
+gap:40px;
+margin-top:50px;
+}
+
+.feature-box{
+background:white;
+color:black;
+padding:20px;
+border-radius:10px;
+width:200px;
+box-shadow:0 6px 15px rgba(0,0,0,0.2);
+}
+
+.icon{
+font-size:40px;
+margin-bottom:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="hero">
+
+<h1>⚡ Smart Appliance Electricity Monitoring System</h1>
+
+<p>
+Monitor your appliance electricity usage, calculate daily and monthly energy costs, 
+and track real-time power consumption using smart plug technology.
+</p>
+
+<a href="/instructions">
+<button class="start-btn">Start </button>
+</a>
+
+<div class="features">
+
+<div class="feature-box">
+<div class="icon">📊</div>
+<h3>Daily Monitoring</h3>
+<p>Track daily electricity usage of appliances</p>
+</div>
+
+<div class="feature-box">
+<div class="icon">📅</div>
+<h3>Monthly Reports</h3>
+<p>View monthly energy consumption</p>
+</div>
+
+<div class="feature-box">
+<div class="icon">⚡</div>
+<h3>Real-Time Power</h3>
+<p>Live smart plug electricity monitoring</p>
+</div>
+
+</div>
+
+</div>
+
+</body>
+</html>

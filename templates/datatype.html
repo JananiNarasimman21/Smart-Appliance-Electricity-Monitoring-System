@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>Select Data Type</title>
+
+<link rel="stylesheet" href="/static/style.css">
+
+<style>
+
+.container{
+text-align:center;
+margin-top:80px;
+}
+
+/* remove underline from links */
+a{
+text-decoration:none;
+color:inherit;
+}
+
+.option-box{
+width:300px;
+margin:20px auto;
+padding:20px;
+border-radius:12px;
+color:white;
+font-size:20px;
+cursor:pointer;
+box-shadow:0 6px 15px rgba(0,0,0,0.2);
+transition:0.3s;
+}
+
+.option-box:hover{
+transform:scale(1.05);
+}
+
+.daily{
+background:#3498db;
+}
+
+.monthly{
+background:#2ecc71;
+}
+
+.realtime{
+background:#e74c3c;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>⚡ Select Data Type</h1>
+
+<a href="/data/{{appliance}}/daily">
+<div class="option-box daily">
+📅 Daily Electricity Usage
+</div>
+</a>
+
+<a href="/data/{{appliance}}/monthly">
+<div class="option-box monthly">
+📊 Monthly Electricity Usage
+</div>
+</a>
+
+<a href="/realtime">
+<div class="option-box realtime">
+⚡ Real Time Electricity
+</div>
+</a>
+
+</div>
+
+</body>
+
+</html>

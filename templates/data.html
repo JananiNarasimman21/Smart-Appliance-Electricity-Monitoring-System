@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+<title>Electricity Data</title>
+
+<link rel="stylesheet" href="/static/style.css">
+
+<style>
+
+body{
+font-family:Arial, sans-serif;
+background:linear-gradient(135deg,#6fd3c4,#86a8e7);
+margin:0;
+padding:30px;
+text-align:center;
+}
+
+h1{
+margin-bottom:30px;
+}
+
+/* table design */
+
+table{
+margin:auto;
+border-collapse:collapse;
+width:70%;
+background:white;
+box-shadow:0 8px 20px rgba(0,0,0,0.2);
+}
+
+th,td{
+padding:12px;
+border:1px solid #ccc;
+text-align:center;
+}
+
+th{
+background:#3498db;
+color:white;
+}
+
+tr:hover{
+background:#f2f2f2;
+}
+
+/* buttons */
+
+.button-container{
+margin-top:30px;
+}
+
+button{
+padding:12px 25px;
+margin:10px;
+font-size:16px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+color:white;
+}
+
+.csv-btn{
+background:#27ae60;
+}
+
+.pdf-btn{
+background:#e67e22;
+}
+
+button:hover{
+opacity:0.9;
+}
+
+a{
+text-decoration:none;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>{{appliance}} {{dtype}} Electricity Data</h1>
+
+<table>
+
+<tr>
+{% for key in rows[0].keys() %}
+<th>{{key}}</th>
+{% endfor %}
+</tr>
+
+{% for row in rows %}
+
+<tr>
+{% for value in row.values() %}
+<td>{{value}}</td>
+{% endfor %}
+</tr>
+{% endfor %}
+
+</table>
+
+<div class="button-container">
+
+<a href="/download/{{appliance}}/{{dtype}}">
+<button class="csv-btn">Download CSV Bill</button>
+</a>
+
+<a href="/bill/{{appliance}}/{{dtype}}">
+<button class="pdf-btn">Download PDF Bill</button>
+</a>
+
+</div>
+
+</body>
+
+</html>

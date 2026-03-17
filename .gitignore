@@ -1,0 +1,5 @@
+dataset/
+output/
+*.csv
+energy.db
+__pycache__/
