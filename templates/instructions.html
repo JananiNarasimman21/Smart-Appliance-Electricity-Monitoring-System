@@ -7,12 +7,22 @@
 
 <style>
 
+body{
+margin:0;
+font-family:Arial, sans-serif;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+color:white;
+}
+
+/* MAIN CONTAINER */
 .container{
 max-width:900px;
 margin:auto;
 padding:20px;
+text-align:center;
 }
 
+/* GRID */
 .step-grid{
 display:grid;
 grid-template-columns:repeat(2,1fr);
@@ -20,37 +30,79 @@ gap:20px;
 margin-top:30px;
 }
 
+/* COLORFUL STEP CARDS */
 .step-card{
-background:white;
 padding:25px;
-border-radius:12px;
-box-shadow:0 6px 15px rgba(0,0,0,0.2);
+border-radius:15px;
 text-align:center;
+color:white;
+box-shadow:0 8px 20px rgba(0,0,0,0.4);
+transition:0.3s;
 }
 
+/* DIFFERENT COLORS FOR EACH BOX */
+.step-card:nth-child(1){
+background:linear-gradient(135deg,#00c6ff,#0072ff);
+}
+
+.step-card:nth-child(2){
+background:linear-gradient(135deg,#f7971e,#ffd200);
+color:black;
+}
+
+.step-card:nth-child(3){
+background:linear-gradient(135deg,#00b09b,#96c93d);
+}
+
+.step-card:nth-child(4){
+background:linear-gradient(135deg,#8e2de2,#4a00e0);
+}
+
+.step-card:nth-child(5){
+background:linear-gradient(135deg,#ff512f,#dd2476);
+}
+
+.step-card:nth-child(6){
+background:linear-gradient(135deg,#1d976c,#93f9b9);
+color:black;
+}
+
+/* HOVER EFFECT */
+.step-card:hover{
+transform:translateY(-10px) scale(1.03);
+}
+
+/* TEXT */
 .step-card h2{
-color:#2c3e50;
+margin:10px 0;
 }
 
 .step-card p{
-color:#555;
-font-size:16px;
+font-size:15px;
 }
 
+/* ICON */
 .icon{
 font-size:40px;
 margin-bottom:10px;
 }
 
+/* BUTTON */
 .next-btn{
 margin-top:40px;
 padding:15px 40px;
 font-size:18px;
 border:none;
 border-radius:10px;
-background:#ff6b6b;
+background:#00c6ff;
 color:white;
 cursor:pointer;
+transition:0.3s;
+}
+
+.next-btn:hover{
+background:#0072ff;
+transform:scale(1.05);
 }
 
 </style>
@@ -111,13 +163,9 @@ Follow the steps below to connect your appliance using a smart plug and monitor 
 
 <p><b>Note:</b> These steps apply to most smart plugs. The setup process may vary slightly depending on the brand.</p>
 
-<center>
-
 <a href="/appliance">
 <button class="next-btn">Next → Select Appliance</button>
 </a>
-
-</center>
 
 </div>
 

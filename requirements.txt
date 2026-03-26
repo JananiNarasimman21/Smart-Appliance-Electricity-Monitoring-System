@@ -1,0 +1,5 @@
+Flask
+pandas
+reportlab
+python-kasa
+aiohttp

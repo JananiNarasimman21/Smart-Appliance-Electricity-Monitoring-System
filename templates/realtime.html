@@ -1,142 +1,211 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-    <title>Real-Time Electricity Monitoring</title>
+    <title>Real-Time Monitoring</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: Arial;
             background: #f4f6f9;
             margin: 0;
         }
 
-        .container {
-            max-width: 800px;
-            margin: auto;
+        h1 {
             text-align: center;
-            padding: 40px 20px;
+            padding: 15px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 20px;
         }
 
         .form-box {
             background: white;
-            padding: 30px;
+            padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-            margin-bottom: 30px;
+            text-align: center;
+            margin-bottom: 20px;
         }
 
         input {
-            padding: 12px;
+            padding: 10px;
             width: 80%;
-            margin: 10px 0;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            font-size: 16px;
+            margin: 8px 0;
         }
 
-        .connect-btn {
-            padding: 12px 30px;
-            background: #3498db;
-            color: white;
+        button {
+            padding: 10px 20px;
+            margin: 5px;
             border: none;
             border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .connect-btn:hover {
-            background: #2980b9;
-        }
-
-        .power-card {
-            background: linear-gradient(120deg, #ff9a9e, #fad0c4);
-            padding: 40px 20px;
-            border-radius: 15px;
             color: white;
-            font-size: 25px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
         }
 
-        .value {
-            font-size: 48px;
-            font-weight: bold;
-            margin: 10px 0 30px;
+        .start { background: #3498db; }
+        .stop { background: #e74c3c; }
+
+        .card {
+            background: linear-gradient(120deg,#ff9a9e,#fad0c4);
+            padding: 20px;
+            border-radius: 12px;
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
         }
 
-        h3 {
-            margin: 10px 0 5px;
-            font-weight: normal;
+        canvas {
+            background: white;
+            border-radius: 10px;
+            padding: 10px;
         }
     </style>
 </head>
 
 <body>
 
-    <div class="container">
+<h1>⚡ Real-Time Monitoring</h1>
 
-        <h1>⚡ Real-Time Electricity Monitoring</h1>
+<div class="container">
 
-        <div class="form-box">
-            <input type="text" id="ip" placeholder="Smart Plug IP Address"><br>
-            <input type="email" id="email" placeholder="TP-Link Email"><br>
-            <input type="password" id="password" placeholder="Password"><br>
-            <button class="connect-btn" onclick="connectPlug()">Connect Smart Plug</button>
-        </div>
+    <!-- INPUT -->
+    <div class="form-box">
+        <input id="ip" placeholder="IP Address"><br>
+        <input id="email" placeholder="Email"><br>
+        <input id="password" type="password" placeholder="Password"><br>
 
-        <div class="power-card">
-            <h3>Current Power</h3>
-            <div class="value" id="powerValue">0 W</div>
-
-            <h3>Total Energy</h3>
-            <div class="value" id="energyValue">0 kWh</div>
-
-            <h3>Electricity Cost</h3>
-            <div class="value" id="costValue">₹0</div>
-        </div>
-
+        <button class="start" onclick="start()">Start</button>
+        <button class="stop" onclick="stop()">Stop</button>
     </div>
 
-    <script>
-        let ip, email, password;
-        let timer = null;
+    <!-- VALUES -->
+    <div class="card">
+        <h3>Power (W): <span id="power">0</span></h3>
+        <h3>Energy Today (kWh): <span id="energy">0</span></h3>
+        <h3>Cost (₹): <span id="cost">0</span></h3>
+    </div>
 
-        function connectPlug() {
-            ip = document.getElementById("ip").value;
-            email = document.getElementById("email").value;
-            password = document.getElementById("password").value;
+    <!-- ⚡ ACCURACY -->
+    <div class="card" style="background: linear-gradient(120deg,#00c6ff,#0072ff);">
+        <h3>⚡ Accuracy: <span id="accuracy">0</span> %</h3>
+    </div>
 
-            updatePower(); // immediate fetch
+    <!-- GRAPH -->
+    <canvas id="chart" height="120"></canvas>
 
-            if (timer === null) {
-                timer = setInterval(updatePower, 5000); // update every 5 sec
-            }
+</div>
+
+<script>
+
+let interval;
+const labels = [];
+const powerData = [];
+
+const ctx = document.getElementById('chart').getContext('2d');
+
+const chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: labels,
+        datasets: [{
+            label: 'Power (W)',
+            data: powerData,
+            borderColor: 'blue',
+            tension: 0.3,
+            fill: false
+        }]
+    },
+    options: {
+        animation: false,
+        responsive: true,
+        scales: {
+            y: { beginAtZero: true }
         }
+    }
+});
 
-        function updatePower() {
-            fetch("/livepower", {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: `ip=${encodeURIComponent(ip)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
+function start() {
+
+    const ip = document.getElementById("ip").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    interval = setInterval(() => {
+
+        fetch("/livepower", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                ip: ip,
+                email: email,
+                password: password
             })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.error) {
-                        alert("Error: " + data.error);
-                        return;
-                    }
+        })
+        .then(res => res.json())
+        .then(data => {
 
-                    // format numbers to 2-6 decimal places
-                    document.getElementById("powerValue").innerHTML = data.power.toFixed(2) + " W";
-                    document.getElementById("energyValue").innerHTML = data.energy.toFixed(6) + " kWh";
-                    document.getElementById("costValue").innerHTML = "₹" + data.cost.toFixed(2);
-                })
-                .catch(err => {
-                    console.log("Fetch error:", err);
-                });
-        }
-    </script>
+            if(data.error){
+                alert(data.error);
+                stop();
+                return;
+            }
+
+            // Update values
+            document.getElementById("power").innerText = data.power.toFixed(2);
+            document.getElementById("energy").innerText = data.energy.toFixed(4);
+            document.getElementById("cost").innerText = data.cost.toFixed(2);
+
+            // Graph update
+            const time = new Date().toLocaleTimeString();
+
+            labels.push(time);
+            powerData.push(data.power);
+
+            if(labels.length > 20){
+                labels.shift();
+                powerData.shift();
+            }
+
+            chart.update();
+
+            // 🔥 Fetch Accuracy
+            fetch("/accuracy_api")
+            .then(res => res.json())
+            .then(accData => {
+
+                let acc = accData.accuracy;
+
+                document.getElementById("accuracy").innerText = acc;
+
+                // Color indicator
+                let accText = document.getElementById("accuracy");
+
+                if(acc >= 95){
+                    accText.style.color = "lime";
+                } else if(acc >= 80){
+                    accText.style.color = "yellow";
+                } else {
+                    accText.style.color = "red";
+                }
+
+            });
+
+        });
+
+    }, 3000);
+}
+
+function stop(){
+    clearInterval(interval);
+}
+
+</script>
 
 </body>
-
 </html>

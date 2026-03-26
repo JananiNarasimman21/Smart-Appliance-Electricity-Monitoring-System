@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html>
 
 <head>
@@ -9,9 +8,10 @@
 
 body{
 font-family:Arial, sans-serif;
-background:linear-gradient(135deg,#67d1c5,#7ea6f5);
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
 margin:0;
 padding:0;
+color:white;
 }
 
 .container{
@@ -22,7 +22,6 @@ padding:30px;
 h1{
 font-size:40px;
 margin-top:20px;
-color:black;
 }
 
 /* remove underline */
@@ -31,6 +30,7 @@ text-decoration:none;
 color:inherit;
 }
 
+/* GRID */
 .grid{
 display:grid;
 grid-template-columns:repeat(3,260px);
@@ -39,31 +39,39 @@ justify-content:center;
 margin-top:50px;
 }
 
+/* CARD STYLE */
 .card{
-background:white;
+background:linear-gradient(135deg,#00c6ff,#0072ff);
 border-radius:18px;
 padding:25px;
-box-shadow:0 10px 25px rgba(0,0,0,0.2);
+box-shadow:0 10px 25px rgba(0,0,0,0.4);
 transition:0.3s;
 cursor:pointer;
+color:white;
 }
 
+/* HOVER EFFECT */
 .card:hover{
-transform:translateY(-8px) scale(1.05);
+transform:translateY(-10px) scale(1.05);
 box-shadow:0 0 25px #00e6ff;
-background:#f5fbff;
 }
 
+/* IMAGE FIX (IMPORTANT) */
 .card img{
-width:120px;
-height:120px;
+width:110px;
+height:110px;
 object-fit:contain;
+
+/* Glass background for visibility */
+background:rgba(255,255,255,0.2);
+padding:12px;
+border-radius:12px;
 }
 
+/* TITLE */
 .card h3{
 margin-top:15px;
 font-size:22px;
-color:#333;
 }
 
 </style>
