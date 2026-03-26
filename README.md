@@ -62,7 +62,9 @@ eb_bill_project/ │ ├── app.py ├── dataset_cost.py ├── realti
 
 ---
 
-## ▶️ How to Run
+## ▶️ How to Run    
+python dataset_cost.py
+python app.py
 
 ### 1️⃣ Install dependencies
 ```bash
