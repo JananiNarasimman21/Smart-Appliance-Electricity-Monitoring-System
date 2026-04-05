@@ -1,0 +1,28 @@
+# Make text files consistent
+* text=auto
+
+# Python files
+*.py text eol=lf
+requirements.txt text eol=lf
+
+# Kotlin/Java files
+*.kt text eol=lf
+*.java text eol=lf
+
+# XML, HTML, Gradle files
+*.xml text eol=lf
+*.html text eol=lf
+*.gradle text eol=lf
+*.kts text eol=lf
+*.json text eol=lf
+*.properties text eol=lf
+
+# Markdown
+*.md text eol=lf
+
+# Binary files (do not change line endings)
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.apk binary

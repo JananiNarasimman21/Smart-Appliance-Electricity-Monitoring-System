@@ -70,3 +70,43 @@ python app.py
 ### 1️⃣ Install dependencies
 ```bash
 pip install flask pandas python-kasa
+```
+
+### 2. Start the Flask backend
+```bash
+python app.py
+```
+
+The backend now exposes Android-friendly JSON endpoints:
+
+- `/api/health`
+- `/api/appliances`
+- `/api/data/<appliance>/<dtype>`
+- `/api/realtime/latest`
+- `/livepower`
+- `/accuracy_api`
+
+## Android App
+
+A native Android project has been added in [android_app](./android_app).
+
+### What it includes
+
+- Kotlin + Jetpack Compose UI
+- Appliance list and report viewer
+- Real-time monitoring screen for Tapo smart plug data
+- Configurable Flask server URL so your phone can connect to your PC over Wi-Fi
+
+### How to run the Android app
+
+1. Install Android Studio on your computer.
+2. Open the `android_app` folder in Android Studio.
+3. Let Gradle sync and install any requested SDK components.
+4. Start your Flask backend with `python app.py`.
+5. Make sure your Android phone or emulator and PC can reach each other.
+6. In the app, set the backend URL to your computer's LAN address, for example `http://192.168.1.10:5000`.
+7. Run the app on an emulator or Android phone.
+
+### Important note
+
+This environment did not have `java`, `adb`, or Android build tools installed, so the Android project files were created but the APK was not built here.

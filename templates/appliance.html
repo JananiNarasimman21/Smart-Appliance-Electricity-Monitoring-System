@@ -1,158 +1,101 @@
 <!DOCTYPE html>
 <html>
-
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Select Appliance</title>
+<link rel="stylesheet" href="/static/voice-assistant.css">
 
 <style>
-
-body{
-font-family:Arial, sans-serif;
-background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-margin:0;
-padding:0;
-color:white;
+body {
+font-family: Arial, sans-serif;
+background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+margin: 0;
+padding: 0;
+color: white;
 }
 
-.container{
-text-align:center;
-padding:30px;
+.container {
+text-align: center;
+padding: 24px;
+max-width: 1100px;
+margin: 0 auto;
 }
 
-h1{
-font-size:40px;
-margin-top:20px;
+h1 {
+font-size: 36px;
+margin-top: 20px;
 }
 
-/* remove underline */
-a{
-text-decoration:none;
-color:inherit;
+a {
+text-decoration: none;
+color: inherit;
 }
 
-/* GRID */
-.grid{
-display:grid;
-grid-template-columns:repeat(3,260px);
-gap:40px;
-justify-content:center;
-margin-top:50px;
+.grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+gap: 20px;
+margin-top: 32px;
 }
 
-/* CARD STYLE */
-.card{
-background:linear-gradient(135deg,#00c6ff,#0072ff);
-border-radius:18px;
-padding:25px;
-box-shadow:0 10px 25px rgba(0,0,0,0.4);
-transition:0.3s;
-cursor:pointer;
-color:white;
+.card {
+background: linear-gradient(135deg,#00c6ff,#0072ff);
+border-radius: 18px;
+padding: 20px;
+box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+transition: 0.3s;
+cursor: pointer;
+color: white;
+min-height: 210px;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
 }
 
-/* HOVER EFFECT */
-.card:hover{
-transform:translateY(-10px) scale(1.05);
-box-shadow:0 0 25px #00e6ff;
+.card:hover {
+transform: translateY(-8px) scale(1.02);
+box-shadow: 0 0 25px #00e6ff;
 }
 
-/* IMAGE FIX (IMPORTANT) */
-.card img{
-width:110px;
-height:110px;
-object-fit:contain;
-
-/* Glass background for visibility */
-background:rgba(255,255,255,0.2);
-padding:12px;
-border-radius:12px;
+.card img {
+width: 95px;
+height: 95px;
+object-fit: contain;
+background: rgba(255,255,255,0.2);
+padding: 12px;
+border-radius: 12px;
 }
 
-/* TITLE */
-.card h3{
-margin-top:15px;
-font-size:22px;
+.card h3 {
+margin-top: 14px;
+font-size: 20px;
 }
 
+@media (max-width: 700px) {
+.container { padding: 16px; }
+h1 { font-size: 28px; }
+.grid { grid-template-columns: 1fr; }
+}
 </style>
-
 </head>
-
 <body>
-
 <div class="container">
-
-<h1>⚡ Select Appliance</h1>
+<h1>Select Appliance</h1>
 
 <div class="grid">
-
-<a href="/datatype/Appliance1">
-<div class="card">
-<img src="/static/images/geyser.png">
-<h3>Geyser</h3>
+<a href="/realtime?appliance=Appliance1"><div class="card"><img src="/static/images/geyser.png" alt="Geyser"><h3>Geyser</h3></div></a>
+<a href="/realtime?appliance=Appliance2"><div class="card"><img src="/static/images/fridge.png" alt="Fridge"><h3>Fridge</h3></div></a>
+<a href="/realtime?appliance=Appliance3"><div class="card"><img src="/static/images/microwave.png" alt="Microwave"><h3>Microwave</h3></div></a>
+<a href="/realtime?appliance=Appliance4"><div class="card"><img src="/static/images/ac.png" alt="Air Conditioner"><h3>Air Conditioner</h3></div></a>
+<a href="/realtime?appliance=Appliance5"><div class="card"><img src="/static/images/washing_machine.png" alt="Washing Machine"><h3>Washing Machine</h3></div></a>
+<a href="/realtime?appliance=Appliance6"><div class="card"><img src="/static/images/tv.png" alt="Television"><h3>Television</h3></div></a>
+<a href="/realtime?appliance=Appliance7"><div class="card"><img src="/static/images/purifier.png" alt="Water Purifier"><h3>Water Purifier</h3></div></a>
+<a href="/realtime?appliance=Appliance8"><div class="card"><img src="/static/images/kettle.png" alt="Electric Kettle"><h3>Electric Kettle</h3></div></a>
+<a href="/realtime?appliance=Appliance9"><div class="card"><img src="/static/images/laptop.png" alt="Laptop Charger"><h3>Laptop Charger</h3></div></a>
 </div>
-</a>
-
-<a href="/datatype/Appliance2">
-<div class="card">
-<img src="/static/images/fridge.png">
-<h3>Fridge</h3>
-</div>
-</a>
-
-<a href="/datatype/Appliance3">
-<div class="card">
-<img src="/static/images/microwave.png">
-<h3>Microwave</h3>
-</div>
-</a>
-
-<a href="/datatype/Appliance4">
-<div class="card">
-<img src="/static/images/ac.png">
-<h3>Air Conditioner</h3>
-</div>
-</a>
-
-<a href="/datatype/Appliance5">
-<div class="card">
-<img src="/static/images/washing_machine.png">
-<h3>Washing Machine</h3>
-</div>
-</a>
-
-<a href="/datatype/Appliance6">
-<div class="card">
-<img src="/static/images/tv.png">
-<h3>Television</h3>
-</div>
-</a>
-
-<a href="/datatype/Appliance7">
-<div class="card">
-<img src="/static/images/purifier.png">
-<h3>Water Purifier</h3>
-</div>
-</a>
-
-<a href="/datatype/Appliance8">
-<div class="card">
-<img src="/static/images/kettle.png">
-<h3>Electric Kettle</h3>
-</div>
-</a>
-
-<a href="/datatype/Appliance9">
-<div class="card">
-<img src="/static/images/laptop.png">
-<h3>Laptop Charger</h3>
-</div>
-</a>
-
 </div>
 
-</div>
-
+<script src="/static/voice-assistant.js" defer></script>
 </body>
-
 </html>

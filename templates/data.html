@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Data View</title>
 
     <!-- Chart.js -->
@@ -8,6 +9,7 @@
 
     <!-- Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/voice-assistant.css">
 
     <style>
         body{
@@ -99,6 +101,25 @@
             padding:5px 10px;
             cursor:pointer;
         }
+
+        @media (max-width: 900px) {
+            .container{
+                flex-direction: column;
+                height: auto;
+            }
+
+            .table-container,
+            .graph-container{
+                width: 100%;
+                box-sizing: border-box;
+            }
+
+            .header{
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+        }
     </style>
 </head>
 
@@ -110,7 +131,7 @@
 
     <div>
         <a href="/download/{{ appliance }}/{{ dtype }}">
-            <button class="btn csv-btn">
+            <button class="btn csv-btn" id="download-csv" aria-label="Download CSV">
                 <i class="fas fa-file-csv"></i> CSV
             </button>
         </a>
@@ -120,12 +141,12 @@
             <input type="hidden" name="energy" value="{{ rows[-1]['cost'] }}">
             <input type="hidden" name="cost" value="{{ rows[-1]['cost'] }}">
             <input type="hidden" name="month_cost" value="{{ rows[-1]['cost'] }}">
-            <button class="btn pdf-btn">
+            <button class="btn pdf-btn" id="download-pdf" aria-label="Download PDF">
                 <i class="fas fa-file-pdf"></i> PDF
             </button>
         </form>
 
-        <button class="btn img-btn" onclick="downloadGraph()">
+        <button class="btn img-btn" id="download-graph" aria-label="Download graph image" onclick="downloadGraph()">
             <i class="fas fa-image"></i> Graph
         </button>
     </div>
@@ -309,4 +330,5 @@ function downloadGraph(){
 </script>
 
 </body>
+<script src="/static/voice-assistant.js" defer></script>
 </html>

@@ -2,10 +2,9 @@ import asyncio
 from kasa import Discover, Credentials
 from kasa.module import Module
 
-IP = "10.140.251.193"
+IP = "10.109.133.193"
 EMAIL = "janunarasimman@gmail.com"
-PASSWORD = "Janani@21"
-
+PASSWORD = "Janu_143"
 INTERVAL = 5
 
 async def monitor():

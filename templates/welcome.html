@@ -1,140 +1,144 @@
 <!DOCTYPE html>
 <html>
-
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Smart Energy Dashboard</title>
-
 <link rel="stylesheet" href="/static/style.css">
-
+<link rel="stylesheet" href="/static/voice-assistant.css">
 <style>
-
-body{
-margin:0;
-font-family:Arial, sans-serif;
+body {
+margin: 0;
+font-family: Arial, sans-serif;
+background: #0f172a;
 }
 
-/* HERO SECTION */
-.hero{
-height:100vh;
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-text-align:center;
-color:white;
-
-/* Dark blue gradient + image */
+.hero {
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+text-align: center;
+color: white;
+padding: 28px 18px;
+box-sizing: border-box;
 background:
-linear-gradient(rgba(0,0,50,0.7), rgba(0,0,100,0.8)),
-url("/static/electric_bg.jpg");
-
-background-size:cover;
-background-position:center;
+linear-gradient(rgba(10, 20, 55, 0.72), rgba(10, 30, 90, 0.8)),
+url('/static/electric_bg.jpg');
+background-size: cover;
+background-position: center;
 }
 
-/* TITLE */
-.hero h1{
-font-size:48px;
-margin-bottom:10px;
+.hero h1 {
+font-size: clamp(30px, 6vw, 52px);
+margin: 0 0 12px;
+line-height: 1.2;
+max-width: 980px;
 }
 
-/* DESCRIPTION */
-.hero p{
-font-size:20px;
-max-width:700px;
-margin-bottom:30px;
+.hero p {
+font-size: clamp(15px, 2.5vw, 20px);
+max-width: 760px;
+margin: 0 0 24px;
+line-height: 1.6;
 }
 
-/* BUTTON */
-.start-btn{
-padding:15px 40px;
-font-size:20px;
-border:none;
-border-radius:10px;
-background:#00bfff;
-color:white;
-cursor:pointer;
-transition:0.3s;
+.start-btn {
+display: inline-block;
+padding: 14px 34px;
+font-size: 19px;
+border: none;
+border-radius: 10px;
+background: #00bfff;
+color: white;
+cursor: pointer;
+transition: 0.25s;
+text-decoration: none;
+font-weight: 700;
 }
 
-.start-btn:hover{
-background:#009acd;
-transform:scale(1.05);
+.start-btn:hover {
+background: #009acd;
+transform: translateY(-2px);
 }
 
-/* FEATURES */
-.features{
-display:flex;
-justify-content:center;
-gap:40px;
-margin-top:50px;
-flex-wrap:wrap;
+.features {
+width: min(1020px, 100%);
+display: grid;
+grid-template-columns: repeat(3, minmax(0, 1fr));
+gap: 16px;
+margin-top: 30px;
 }
 
-/* FEATURE BOX */
-.feature-box{
-background:rgba(255,255,255,0.1);
-color:white;
-padding:20px;
-border-radius:15px;
-width:220px;
-backdrop-filter:blur(10px);
-box-shadow:0 6px 20px rgba(0,0,0,0.4);
-transition:0.3s;
+.feature-box {
+background: rgba(255,255,255,0.12);
+color: white;
+padding: 18px;
+border-radius: 14px;
+backdrop-filter: blur(8px);
+box-shadow: 0 6px 20px rgba(0,0,0,0.32);
 }
 
-.feature-box:hover{
-transform:translateY(-10px);
+.feature-box h3 {
+margin: 0 0 8px;
+font-size: 20px;
 }
 
-/* ICON */
-.icon{
-font-size:40px;
-margin-bottom:10px;
+.feature-box p {
+margin: 0;
+font-size: 14px;
+line-height: 1.5;
 }
 
+.icon {
+font-size: 30px;
+margin-bottom: 8px;
+}
+
+@media (max-width: 850px) {
+.features {
+grid-template-columns: 1fr;
+}
+
+.start-btn {
+width: 100%;
+max-width: 280px;
+box-sizing: border-box;
+}
+}
 </style>
-
 </head>
-
 <body>
-
 <div class="hero">
-
-<h1>⚡ Smart Appliance Electricity Monitoring System</h1>
-
+<h1>Smart Appliance Electricity Monitoring System</h1>
 <p>
-Monitor your appliance electricity usage, calculate daily and monthly energy costs, 
+Monitor appliance-level electricity usage, calculate daily and monthly bills,
 and track real-time power consumption using smart plug technology.
 </p>
 
-<a href="/instructions">
-<button class="start-btn">Start</button>
-</a>
+<a class="start-btn" href="/instructions">Start</a>
 
 <div class="features">
-
 <div class="feature-box">
-<div class="icon">📊</div>
+<div class="icon">Daily</div>
 <h3>Daily Monitoring</h3>
-<p>Track daily electricity usage of appliances</p>
+<p>Track day-by-day appliance electricity usage.</p>
 </div>
 
 <div class="feature-box">
-<div class="icon">📅</div>
+<div class="icon">Monthly</div>
 <h3>Monthly Reports</h3>
-<p>View monthly energy consumption</p>
+<p>View monthly energy and bill patterns clearly.</p>
 </div>
 
 <div class="feature-box">
-<div class="icon">⚡</div>
+<div class="icon">Realtime</div>
 <h3>Real-Time Power</h3>
-<p>Live smart plug electricity monitoring</p>
+<p>See live power values from your smart plug.</p>
+</div>
+</div>
 </div>
 
-</div>
-
-</div>
-
+<script src="/static/voice-assistant.js" defer></script>
 </body>
 </html>

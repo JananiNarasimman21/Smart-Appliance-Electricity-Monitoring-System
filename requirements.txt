@@ -3,3 +3,4 @@ pandas
 reportlab
 python-kasa
 aiohttp
+cryptography

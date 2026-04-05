@@ -1,0 +1,4 @@
+com.ebbill.mobile.test.app-androidTest-0 C:\Users\Administrator\Desktop\eb_bill_project\android_app\app\build\generated\res\resValues\androidTest\debug
+com.ebbill.mobile.test.app-mergeDebugAndroidTestResources-1 C:\Users\Administrator\Desktop\eb_bill_project\android_app\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\merged.dir
+com.ebbill.mobile.test.app-mergeDebugAndroidTestResources-2 C:\Users\Administrator\Desktop\eb_bill_project\android_app\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\stripped.dir
+com.ebbill.mobile.test.app-debugAndroidTest-3 C:\Users\Administrator\Desktop\eb_bill_project\android_app\app\build\intermediates\merged_res\debugAndroidTest\mergeDebugAndroidTestResources

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>History</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/static/voice-assistant.css">
+    <style>
+        body { font-family: Arial, sans-serif; background: #f6f8fa; margin: 0; }
+        .container { max-width: 920px; margin: auto; padding: 18px; }
+        h1 { text-align: center; }
+        .card { background: white; border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+        .row { display: flex; gap: 8px; flex-wrap: wrap; }
+        button, select { padding: 10px 14px; border-radius: 8px; border: 1px solid #d0d7de; }
+        button { border: none; color: white; background: #0d6efd; cursor: pointer; }
+        button.secondary { background: #6c757d; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; border-bottom: 1px solid #e9ecef; text-align: left; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>History - Daily / Monthly Bill</h1>
+
+    <div class="card">
+        <div class="row">
+            <select id="appliance"></select>
+            <button id="daily">Daily</button>
+            <button id="monthly" class="secondary">Monthly</button>
+            <button id="go-realtime" class="secondary">Back to Realtime</button>
+        </div>
+    </div>
+
+    <div class="card">
+        <canvas id="historyChart" height="120"></canvas>
+    </div>
+
+    <div class="card">
+        <table>
+            <thead>
+                <tr>
+                    <th>Period</th>
+                    <th>Energy (kWh)</th>
+                    <th>Cost (Rs)</th>
+                </tr>
+            </thead>
+            <tbody id="historyBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+const applianceSelect = document.getElementById("appliance");
+const historyBody = document.getElementById("historyBody");
+const params = new URLSearchParams(window.location.search);
+const queryAppliance = params.get("appliance") || "";
+let currentPeriod = (params.get("period") || "daily").toLowerCase() === "monthly" ? "monthly" : "daily";
+
+const chart = new Chart(document.getElementById("historyChart").getContext("2d"), {
+    type: "bar",
+    data: {
+        labels: [],
+        datasets: [{ label: "Cost (Rs)", data: [], backgroundColor: "#0d6efd" }]
+    },
+    options: { responsive: true }
+});
+
+function renderRows(rows) {
+    historyBody.innerHTML = "";
+    rows.forEach(row => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${row.label}</td><td>${row.energy}</td><td>${row.cost}</td>`;
+        historyBody.appendChild(tr);
+    });
+}
+
+function loadHistory() {
+    const appliance = applianceSelect.value;
+    if (!appliance) return;
+    fetch(`/api/history?appliance=${encodeURIComponent(appliance)}&period=${currentPeriod}`)
+        .then(res => res.json())
+        .then(payload => {
+            const rows = payload.rows || [];
+            renderRows(rows);
+            chart.data.labels = rows.map(r => r.label).reverse();
+            chart.data.datasets[0].data = rows.map(r => r.cost).reverse();
+            chart.update();
+        });
+}
+
+function loadAppliances() {
+    fetch("/api/appliances")
+        .then(res => res.json())
+        .then(payload => {
+            applianceSelect.innerHTML = "";
+            (payload.appliances || []).forEach(item => {
+                const opt = document.createElement("option");
+                opt.value = item.id;
+                opt.textContent = item.name;
+                applianceSelect.appendChild(opt);
+            });
+            if (queryAppliance) applianceSelect.value = queryAppliance;
+            loadHistory();
+        });
+}
+
+document.getElementById("daily").addEventListener("click", () => { currentPeriod = "daily"; loadHistory(); });
+document.getElementById("monthly").addEventListener("click", () => { currentPeriod = "monthly"; loadHistory(); });
+document.getElementById("go-realtime").addEventListener("click", () => {
+    const appliance = applianceSelect.value;
+    window.location.href = `/realtime?appliance=${encodeURIComponent(appliance)}`;
+});
+applianceSelect.addEventListener("change", loadHistory);
+
+loadAppliances();
+</script>
+<script src="/static/voice-assistant.js" defer></script>
+</body>
+</html>
