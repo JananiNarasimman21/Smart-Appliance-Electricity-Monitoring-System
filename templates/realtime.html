@@ -47,7 +47,9 @@
         <div class="btn-row">
             <button class="primary" id="start-monitoring" type="button">Start</button>
             <button class="danger" id="stop-monitoring" type="button">Stop</button>
+            <button class="secondary" id="open-tapo-app" type="button">Open Tapo App</button>
         </div>
+        <p class="hint" style="margin-top: 10px;">If app does not open, use Chrome browser and try again.</p>
     </div>
 
     <div class="card metrics">
@@ -192,6 +194,23 @@ applianceSelect.addEventListener("change", () => {
 
 document.getElementById("start-monitoring").addEventListener("click", startMonitoring);
 document.getElementById("stop-monitoring").addEventListener("click", stopMonitoring);
+document.getElementById("open-tapo-app").addEventListener("click", () => {
+    let appOpened = false;
+    const onHidden = () => {
+        if (document.hidden) {
+            appOpened = true;
+        }
+    };
+    document.addEventListener("visibilitychange", onHidden, { once: true });
+
+    window.location.href = "tapo://";
+
+    setTimeout(() => {
+        if (!appOpened) {
+            alert("Unable to open Tapo app from this browser. Please open Tapo app manually or try in Chrome.");
+        }
+    }, 1200);
+});
 document.getElementById("go-history").addEventListener("click", () => {
     const appliance = applianceSelect.value;
     if (!appliance) {
