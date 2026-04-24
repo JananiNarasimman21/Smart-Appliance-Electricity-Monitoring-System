@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Appliance Energy Ranking</title>
+    <link rel="stylesheet" href="/static/voice-assistant.css">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; background: #f6f8fb; }
+        .container { max-width: 920px; margin: auto; padding: 18px; }
+        h1 { text-align: center; margin-bottom: 16px; }
+        .row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+        .card { background: white; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
+        .power { background: linear-gradient(120deg,#f7971e,#ffd200); color: #27210a; }
+        .energy { background: linear-gradient(120deg,#00c6ff,#0072ff); color: white; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; border-bottom: 1px solid #e5e7eb; text-align: left; }
+        th { background: #f1f5f9; }
+        button, select {
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid #d0d7de;
+            background: white;
+            cursor: pointer;
+        }
+        button.primary { background: #0d6efd; color: white; border: none; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Appliance Consumption Ranking</h1>
+
+    <div class="row">
+        <select id="period">
+            <option value="month">Month Energy</option>
+            <option value="today">Today Energy</option>
+        </select>
+        <button class="primary" id="refresh" type="button">Refresh</button>
+        <button id="go-appliance" type="button">Back to Appliances</button>
+    </div>
+
+    <div class="card power">
+        <h3>Top Power Consumer: <span id="top-appliance">-</span></h3>
+        <h3>Average Power (W): <span id="top-avg-power">0</span></h3>
+        <h3>Peak Power (W): <span id="top-peak-power">0</span></h3>
+    </div>
+
+    <div class="card energy">
+        <h3>Top Energy Consumer: <span id="top-energy-appliance">-</span></h3>
+        <h3>Energy (kWh): <span id="top-energy-kwh">0</span></h3>
+        <h3>Estimated Cost (Rs): <span id="top-energy-cost">0</span></h3>
+    </div>
+
+    <div class="card">
+        <h3>All Appliances Ranked by Energy</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Appliance</th>
+                    <th>Energy (kWh)</th>
+                    <th>Cost (Rs)</th>
+                </tr>
+            </thead>
+            <tbody id="ranking-body"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function loadTopPower() {
+    fetch("/api/power/top")
+        .then(res => res.json())
+        .then(top => {
+            document.getElementById("top-appliance").innerText = top.name || "-";
+            document.getElementById("top-avg-power").innerText = Number(top.avg_power || 0).toFixed(2);
+            document.getElementById("top-peak-power").innerText = Number(top.peak_power || 0).toFixed(2);
+        });
+}
+
+function loadTopEnergy() {
+    const period = document.getElementById("period").value;
+    fetch(`/api/energy/top?period=${encodeURIComponent(period)}`)
+        .then(res => res.json())
+        .then(top => {
+            document.getElementById("top-energy-appliance").innerText = top.name || "-";
+            document.getElementById("top-energy-kwh").innerText = Number(top.energy_kwh || 0).toFixed(4);
+            document.getElementById("top-energy-cost").innerText = Number(top.cost_rs || 0).toFixed(2);
+        });
+}
+
+function loadEnergyRanking() {
+    const period = document.getElementById("period").value;
+    fetch(`/api/energy/ranking?period=${encodeURIComponent(period)}`)
+        .then(res => res.json())
+        .then(payload => {
+            const rows = payload.rows || [];
+            const tbody = document.getElementById("ranking-body");
+            tbody.innerHTML = "";
+
+            if (!rows.length) {
+                const tr = document.createElement("tr");
+                tr.innerHTML = "<td colspan='4'>No data available yet.</td>";
+                tbody.appendChild(tr);
+                return;
+            }
+
+            rows.forEach(row => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${row.rank}</td>
+                    <td>${row.name || "-"}</td>
+                    <td>${Number(row.energy_kwh || 0).toFixed(4)}</td>
+                    <td>${Number(row.cost_rs || 0).toFixed(2)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        });
+}
+
+function refreshAll() {
+    loadTopPower();
+    loadTopEnergy();
+    loadEnergyRanking();
+}
+
+document.getElementById("refresh").addEventListener("click", refreshAll);
+document.getElementById("period").addEventListener("change", () => {
+    loadTopEnergy();
+    loadEnergyRanking();
+});
+document.getElementById("go-appliance").addEventListener("click", () => {
+    window.location.href = "/appliance";
+});
+
+refreshAll();
+setInterval(refreshAll, 5000);
+</script>
+<script src="/static/voice-assistant.js" defer></script>
+</body>
+</html>

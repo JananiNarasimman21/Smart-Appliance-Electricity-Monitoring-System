@@ -191,6 +191,90 @@ def fetch_top_power_appliance():
         "peak_power": round(float(row["peak_power"] or 0), 2)
     }
 
+
+def fetch_top_energy_appliance(period="month"):
+    metric_col = "month_energy" if period == "month" else "today_energy"
+    cost_col = "month_cost" if period == "month" else "today_cost"
+
+    conn = sqlite3.connect("energy.db")
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    try:
+        ensure_realtime_schema(cursor)
+        # Pick the latest row for each appliance, then compare energy.
+        cursor.execute(f"""
+        SELECT r.appliance, r.{metric_col} AS energy_kwh, r.{cost_col} AS cost_rs
+        FROM realtime_energy r
+        INNER JOIN (
+            SELECT appliance, MAX(id) AS latest_id
+            FROM realtime_energy
+            GROUP BY appliance
+        ) last_row ON r.id = last_row.latest_id
+        WHERE r.{metric_col} IS NOT NULL
+        ORDER BY r.{metric_col} DESC
+        LIMIT 1
+        """)
+        row = cursor.fetchone()
+    except sqlite3.OperationalError:
+        conn.close()
+        return None
+
+    conn.close()
+    if not row:
+        return None
+
+    appliance_id = row["appliance"]
+    return {
+        "period": period,
+        "id": appliance_id,
+        "name": appliance_map.get(appliance_id, appliance_id),
+        "energy_kwh": round(float(row["energy_kwh"] or 0), 4),
+        "cost_rs": round(float(row["cost_rs"] or 0), 2)
+    }
+
+
+def fetch_energy_ranking(period="month"):
+    metric_col = "month_energy" if period == "month" else "today_energy"
+    cost_col = "month_cost" if period == "month" else "today_cost"
+
+    conn = sqlite3.connect("energy.db")
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    try:
+        ensure_realtime_schema(cursor)
+        cursor.execute(f"""
+        SELECT r.appliance, r.{metric_col} AS energy_kwh, r.{cost_col} AS cost_rs
+        FROM realtime_energy r
+        INNER JOIN (
+            SELECT appliance, MAX(id) AS latest_id
+            FROM realtime_energy
+            GROUP BY appliance
+        ) last_row ON r.id = last_row.latest_id
+        WHERE r.{metric_col} IS NOT NULL
+        ORDER BY r.{metric_col} DESC
+        """)
+        rows = cursor.fetchall()
+    except sqlite3.OperationalError:
+        conn.close()
+        return []
+
+    conn.close()
+
+    ranking = []
+    for idx, row in enumerate(rows, start=1):
+        appliance_id = row["appliance"]
+        ranking.append({
+            "rank": idx,
+            "id": appliance_id,
+            "name": appliance_map.get(appliance_id, appliance_id),
+            "energy_kwh": round(float(row["energy_kwh"] or 0), 4),
+            "cost_rs": round(float(row["cost_rs"] or 0), 2)
+        })
+
+    return ranking
+
 # -----------------------------
 # Tariff Function
 # -----------------------------
@@ -324,6 +408,11 @@ def history():
     return render_template("history.html", appliance=appliance, appliance_name=appliance_name)
 
 
+@app.route("/top-consumer")
+def top_consumer():
+    return render_template("top_consumer.html")
+
+
 @app.route("/api/health")
 def api_health():
     return jsonify({"status": "ok"})
@@ -379,6 +468,37 @@ def api_power_top():
             "peak_power": 0
         })
     return jsonify(top)
+
+
+@app.route("/api/energy/top")
+def api_energy_top():
+    period = request.args.get("period", "month").strip().lower()
+    if period not in {"today", "month"}:
+        return jsonify({"error": "period must be today or month"}), 400
+
+    top = fetch_top_energy_appliance(period="today" if period == "today" else "month")
+    if top is None:
+        return jsonify({
+            "period": period,
+            "id": None,
+            "name": None,
+            "energy_kwh": 0,
+            "cost_rs": 0
+        })
+    return jsonify(top)
+
+
+@app.route("/api/energy/ranking")
+def api_energy_ranking():
+    period = request.args.get("period", "month").strip().lower()
+    if period not in {"today", "month"}:
+        return jsonify({"error": "period must be today or month"}), 400
+
+    rows = fetch_energy_ranking(period="today" if period == "today" else "month")
+    return jsonify({
+        "period": period,
+        "rows": rows
+    })
 
 
 @app.route("/api/history")
