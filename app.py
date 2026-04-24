@@ -87,6 +87,19 @@ def ensure_realtime_schema(cursor):
     if "appliance" not in columns:
         cursor.execute("ALTER TABLE realtime_energy ADD COLUMN appliance TEXT DEFAULT 'Unknown'")
 
+    # Backfill older appliance ids (e.g., Appliance9) to readable names.
+    for appliance_id, appliance_name in appliance_map.items():
+        cursor.execute(
+            "UPDATE realtime_energy SET appliance = ? WHERE appliance = ?",
+            (appliance_name, appliance_id)
+        )
+
+
+def appliance_db_values(appliance):
+    appliance_id = (appliance or "").strip()
+    appliance_name = appliance_map.get(appliance_id, appliance_id)
+    return appliance_id, appliance_name
+
 
 def get_appliance_items():
     items = []
@@ -126,12 +139,13 @@ def fetch_latest_realtime_row(appliance=None):
     try:
         ensure_realtime_schema(cursor)
         if appliance:
+            appliance_id, appliance_name = appliance_db_values(appliance)
             cursor.execute("""
             SELECT timestamp, appliance, power, today_energy, month_energy, today_cost, month_cost
             FROM realtime_energy
-            WHERE appliance = ?
+            WHERE appliance IN (?, ?)
             ORDER BY id DESC LIMIT 1
-            """, (appliance,))
+            """, (appliance_id, appliance_name))
         else:
             cursor.execute("""
             SELECT timestamp, appliance, power, today_energy, month_energy, today_cost, month_cost
@@ -311,13 +325,15 @@ def store_data(appliance, power, today_energy, month_energy, today_cost, month_c
 
     ensure_realtime_schema(cursor)
 
+    _, appliance_name = appliance_db_values(appliance)
+
     cursor.execute("""
     INSERT INTO realtime_energy
     (timestamp, appliance, power, today_energy, month_energy, today_cost, month_cost)
     VALUES (?, ?, ?, ?, ?, ?, ?)
     """, (
         datetime.now(),
-        appliance,
+        appliance_name,
         power,
         today_energy,
         month_energy,
@@ -514,6 +530,7 @@ def api_history():
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
     ensure_realtime_schema(cursor)
+    appliance_id, appliance_name = appliance_db_values(appliance)
 
     if period == "daily":
         cursor.execute("""
@@ -521,22 +538,22 @@ def api_history():
                AVG(today_energy) as energy,
                AVG(today_cost) as cost
         FROM realtime_energy
-        WHERE appliance = ?
+        WHERE appliance IN (?, ?)
         GROUP BY date(timestamp)
         ORDER BY date(timestamp) DESC
         LIMIT 30
-        """, (appliance,))
+        """, (appliance_id, appliance_name))
     else:
         cursor.execute("""
         SELECT strftime('%Y-%m', timestamp) as label,
                AVG(month_energy) as energy,
                AVG(month_cost) as cost
         FROM realtime_energy
-        WHERE appliance = ?
+        WHERE appliance IN (?, ?)
         GROUP BY strftime('%Y-%m', timestamp)
         ORDER BY strftime('%Y-%m', timestamp) DESC
         LIMIT 12
-        """, (appliance,))
+        """, (appliance_id, appliance_name))
 
     rows = cursor.fetchall()
     conn.close()
