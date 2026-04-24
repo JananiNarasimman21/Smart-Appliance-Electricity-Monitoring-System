@@ -10,5 +10,5 @@ public final class BuildConfig {
   // Field from build type: debug
   public static final boolean ALLOW_SELF_SIGNED_SSL = true;
   // Field from build type: debug
-  public static final String BASE_URL = "http://10.140.251.95:5000/";
+  public static final String BASE_URL = "https://chantay-unhomiletic-smokily.ngrok-free.dev";
 }

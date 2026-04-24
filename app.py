@@ -19,26 +19,50 @@ app = Flask(__name__)
 # -----------------------------
 appliance_map = {
     "Appliance1": "Geyser",
-    "Appliance2": "Fridge",
+    "Appliance2": "Refrigerator",
     "Appliance3": "Microwave",
-    "Appliance4": "AirConditioner",
+    "Appliance4": "InductionCooktop",
     "Appliance5": "WashingMachine",
     "Appliance6": "Television",
     "Appliance7": "WaterPurifier",
     "Appliance8": "ElectricKettle",
-    "Appliance9": "LaptopCharger"
+    "Appliance9": "LaptopCharger",
+    "Appliance10": "TableFan",
+    "Appliance11": "IronBox",
+    "Appliance12": "RiceCooker",
+    "Appliance13": "MixerGrinder",
+    "Appliance14": "Toaster",
+    "Appliance15": "CoffeeMaker",
+    "Appliance16": "DesktopPC",
+    "Appliance17": "WiFiRouter",
+    "Appliance18": "PhoneCharger",
+    "Appliance19": "AirPurifier",
+    "Appliance20": "VacuumCleaner",
+    "Appliance21": "WaterMotor"
 }
 
 appliance_images = {
-    "Geyser": "geyser",
-    "Fridge": "kitchen",
+    "Geyser": "mode_heat",
+    "Refrigerator": "kitchen",
     "Microwave": "microwave",
-    "AirConditioner": "ac_unit",
+    "InductionCooktop": "soup_kitchen",
     "WashingMachine": "local_laundry_service",
     "Television": "tv",
     "WaterPurifier": "water_drop",
     "ElectricKettle": "emoji_food_beverage",
-    "LaptopCharger": "laptop_chromebook"
+    "LaptopCharger": "laptop_chromebook",
+    "TableFan": "mode_fan",
+    "IronBox": "iron",
+    "RiceCooker": "rice_bowl",
+    "MixerGrinder": "blender",
+    "Toaster": "toaster",
+    "CoffeeMaker": "coffee_maker",
+    "DesktopPC": "desktop_windows",
+    "WiFiRouter": "router",
+    "PhoneCharger": "smartphone",
+    "AirPurifier": "air",
+    "VacuumCleaner": "vacuum",
+    "WaterMotor": "water"
 }
 
 supported_data_types = ("daily", "monthly")
@@ -132,6 +156,39 @@ def fetch_latest_realtime_row(appliance=None):
         "month_energy": row["month_energy"],
         "today_cost": row["today_cost"],
         "month_cost": row["month_cost"]
+    }
+
+
+def fetch_top_power_appliance():
+    conn = sqlite3.connect("energy.db")
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+
+    try:
+        ensure_realtime_schema(cursor)
+        cursor.execute("""
+        SELECT appliance, AVG(power) AS avg_power, MAX(power) AS peak_power
+        FROM realtime_energy
+        WHERE power IS NOT NULL
+        GROUP BY appliance
+        ORDER BY avg_power DESC
+        LIMIT 1
+        """)
+        row = cursor.fetchone()
+    except sqlite3.OperationalError:
+        conn.close()
+        return None
+
+    conn.close()
+    if not row:
+        return None
+
+    appliance_id = row["appliance"]
+    return {
+        "id": appliance_id,
+        "name": appliance_map.get(appliance_id, appliance_id),
+        "avg_power": round(float(row["avg_power"] or 0), 2),
+        "peak_power": round(float(row["peak_power"] or 0), 2)
     }
 
 # -----------------------------
@@ -309,6 +366,19 @@ def api_realtime_latest():
         })
 
     return jsonify(latest)
+
+
+@app.route("/api/power/top")
+def api_power_top():
+    top = fetch_top_power_appliance()
+    if top is None:
+        return jsonify({
+            "id": None,
+            "name": None,
+            "avg_power": 0,
+            "peak_power": 0
+        })
+    return jsonify(top)
 
 
 @app.route("/api/history")

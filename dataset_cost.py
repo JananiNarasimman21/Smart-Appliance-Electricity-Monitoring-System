@@ -18,7 +18,7 @@ appliance_columns = [
 ]
 
 appliance_names = [
-'Geyser','Fridge','Microwave','AirConditioner','WashingMachine',
+'Geyser','Refrigerator','Microwave','InductionCooktop','WashingMachine',
 'Television','WaterPurifier','ElectricKettle','LaptopCharger'
 ]
 # Output folder

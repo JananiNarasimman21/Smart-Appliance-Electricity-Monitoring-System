@@ -22,7 +22,7 @@ android {
 
     buildTypes {
         debug {
-            buildConfigField("String", "BASE_URL", "\"http://10.140.251.95:5000/\"")
+            buildConfigField("String", "BASE_URL", "\"https://chantay-unhomiletic-smokily.ngrok-free.dev\"")
             buildConfigField("boolean", "ALLOW_SELF_SIGNED_SSL", "true")
         }
         release {

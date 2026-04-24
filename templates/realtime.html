@@ -18,6 +18,7 @@
         .secondary { background: #6c757d; }
         .metrics { background: linear-gradient(120deg,#1d976c,#93f9b9); color: #0a1f16; }
         .accuracy { background: linear-gradient(120deg,#00c6ff,#0072ff); color: white; }
+        .top-consumer { background: linear-gradient(120deg,#f7971e,#ffd200); color: #27210a; }
         .hint { color: #555; margin: 4px 0 0 0; }
         #credentials-card { display: none; }
         canvas { background: white; border-radius: 12px; padding: 8px; }
@@ -57,6 +58,12 @@
 
     <div class="card accuracy">
         <h3>Accuracy: <span id="accuracy">0</span> %</h3>
+    </div>
+
+    <div class="card top-consumer">
+        <h3>Top Power Consumer: <span id="top-appliance">-</span></h3>
+        <h3>Avg Power (W): <span id="top-avg-power">0</span></h3>
+        <h3>Peak Power (W): <span id="top-peak-power">0</span></h3>
     </div>
 
     <canvas id="chart" height="120"></canvas>
