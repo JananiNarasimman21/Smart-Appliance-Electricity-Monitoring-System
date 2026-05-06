@@ -27,6 +27,8 @@
             <select id="appliance"></select>
             <button id="daily">Daily</button>
             <button id="monthly" class="secondary">Monthly</button>
+            <button id="download-csv" class="secondary">Download CSV</button>
+            <button id="download-graph" class="secondary">Download Graph</button>
             <button id="go-realtime" class="secondary">Back to Realtime</button>
         </div>
     </div>
@@ -55,6 +57,7 @@ const historyBody = document.getElementById("historyBody");
 const params = new URLSearchParams(window.location.search);
 const queryAppliance = params.get("appliance") || "";
 let currentPeriod = (params.get("period") || "daily").toLowerCase() === "monthly" ? "monthly" : "daily";
+let currentRows = [];
 
 const chart = new Chart(document.getElementById("historyChart").getContext("2d"), {
     type: "bar",
@@ -81,11 +84,45 @@ function loadHistory() {
         .then(res => res.json())
         .then(payload => {
             const rows = payload.rows || [];
+            currentRows = rows;
             renderRows(rows);
             chart.data.labels = rows.map(r => r.label).reverse();
             chart.data.datasets[0].data = rows.map(r => r.cost).reverse();
             chart.update();
         });
+}
+
+function downloadHistoryCsv() {
+    if (!currentRows.length) {
+        alert("No history data available to download.");
+        return;
+    }
+
+    const applianceName = applianceSelect.options[applianceSelect.selectedIndex]?.text || "appliance";
+    const csvRows = [["Period", "Energy (kWh)", "Cost (Rs)"]];
+    currentRows.forEach(row => {
+        csvRows.push([row.label, row.energy, row.cost]);
+    });
+
+    const csv = csvRows.map(row => row.join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `${applianceName.replace(/\s+/g, "_")}_${currentPeriod}_history.csv`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+}
+
+function downloadHistoryGraph() {
+    if (!currentRows.length) {
+        alert("No history graph available to download.");
+        return;
+    }
+
+    const link = document.createElement("a");
+    link.href = chart.toBase64Image("image/png", 1);
+    link.download = `${currentPeriod}_history_graph.png`;
+    link.click();
 }
 
 function loadAppliances() {
@@ -106,6 +143,8 @@ function loadAppliances() {
 
 document.getElementById("daily").addEventListener("click", () => { currentPeriod = "daily"; loadHistory(); });
 document.getElementById("monthly").addEventListener("click", () => { currentPeriod = "monthly"; loadHistory(); });
+document.getElementById("download-csv").addEventListener("click", downloadHistoryCsv);
+document.getElementById("download-graph").addEventListener("click", downloadHistoryGraph);
 document.getElementById("go-realtime").addEventListener("click", () => {
     const appliance = applianceSelect.value;
     window.location.href = `/realtime?appliance=${encodeURIComponent(appliance)}`;

@@ -475,11 +475,9 @@
         }
 
         if (
-            command === 'select data type' ||
-            command === 'data type' ||
-            command === 'select data type page' ||
-            command === 'data type page' ||
-            command === 'select data type screen'
+            command === 'history page' ||
+            command === 'history screen' ||
+            command === 'open history'
         ) {
             if (currentAppliance) {
                 navigateWithReply('/history?appliance=' + currentAppliance, 'Opening history view.');
@@ -534,12 +532,6 @@
                 return true;
             }
 
-            if (path.indexOf('/datatype/') === 0) {
-                if (currentAppliance) {
-                    navigateWithReply('/history?appliance=' + currentAppliance + '&period=daily', 'Opening daily history.');
-                    return true;
-                }
-            }
         }
 
         if (command === 'start') {
@@ -564,8 +556,7 @@
 
     function getCurrentApplianceSlug() {
         const queryAppliance = new URLSearchParams(window.location.search).get('appliance');
-        const match = window.location.pathname.match(/\/datatype\/([^/]+)/) || window.location.pathname.match(/\/data\/([^/]+)/);
-        const appliance = queryAppliance || (match ? match[1] : '');
+        const appliance = queryAppliance || '';
         if (appliance) {
             rememberAppliance(appliance);
         }

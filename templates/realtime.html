@@ -47,6 +47,9 @@
         <div class="btn-row">
             <button class="primary" id="start-monitoring" type="button">Start</button>
             <button class="danger" id="stop-monitoring" type="button">Stop</button>
+            <button class="secondary" id="download-csv" type="button">Download CSV</button>
+            <button class="secondary" id="download-pdf" type="button">Download PDF</button>
+            <button class="secondary" id="download-graph" type="button">Download Graph</button>
         </div>
     </div>
 
@@ -68,6 +71,7 @@
 let intervalHandle = null;
 const labels = [];
 const powerData = [];
+let latestReading = null;
 const applianceSelect = document.getElementById("appliance");
 const credentialsCard = document.getElementById("credentials-card");
 const applianceNameLabel = document.getElementById("appliance-name");
@@ -139,6 +143,7 @@ function startMonitoring() {
             return data;
         })
         .then(data => {
+            latestReading = data;
             document.getElementById("power").innerText = Number(data.power || 0).toFixed(2);
             document.getElementById("energy").innerText = Number(data.energy || 0).toFixed(4);
             document.getElementById("cost").innerText = Number(data.cost || 0).toFixed(2);
@@ -185,6 +190,76 @@ function loadAppliances() {
         });
 }
 
+function requireReading() {
+    if (!latestReading) {
+        alert("Start monitoring first to generate dashboard output.");
+        return false;
+    }
+    return true;
+}
+
+function downloadRealtimeCsv() {
+    if (!requireReading()) return;
+
+    const applianceName = applianceSelect.options[applianceSelect.selectedIndex]?.text || latestReading.appliance || "Unknown";
+    const rows = [["Appliance", "Power (W)", "Energy Today (kWh)", "Month Energy (kWh)", "Cost Today (Rs)", "Month Cost (Rs)"]];
+    rows.push([
+        applianceName,
+        Number(latestReading.power || 0).toFixed(2),
+        Number(latestReading.energy || 0).toFixed(4),
+        Number(latestReading.month_energy || 0).toFixed(4),
+        Number(latestReading.cost || 0).toFixed(2),
+        Number(latestReading.month_cost || 0).toFixed(2)
+    ]);
+
+    const csv = rows.map(row => row.join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `${applianceName.replace(/\s+/g, "_")}_realtime.csv`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+}
+
+function downloadRealtimePdf() {
+    if (!requireReading()) return;
+
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = "/download_pdf";
+    form.style.display = "none";
+
+    const fields = {
+        power: Number(latestReading.power || 0).toFixed(2),
+        energy: Number(latestReading.energy || 0).toFixed(4),
+        cost: Number(latestReading.cost || 0).toFixed(2),
+        month_cost: Number(latestReading.month_cost || 0).toFixed(2)
+    };
+
+    Object.entries(fields).forEach(([name, value]) => {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = name;
+        input.value = value;
+        form.appendChild(input);
+    });
+
+    document.body.appendChild(form);
+    form.submit();
+    form.remove();
+}
+
+function downloadRealtimeGraph() {
+    if (!labels.length) {
+        alert("No graph data available yet.");
+        return;
+    }
+    const link = document.createElement("a");
+    link.href = chart.toBase64Image("image/png", 1);
+    link.download = "realtime_power_graph.png";
+    link.click();
+}
+
 applianceSelect.addEventListener("change", () => {
     setMonitoringEnabled(Boolean(applianceSelect.value));
     stopMonitoring();
@@ -192,6 +267,9 @@ applianceSelect.addEventListener("change", () => {
 
 document.getElementById("start-monitoring").addEventListener("click", startMonitoring);
 document.getElementById("stop-monitoring").addEventListener("click", stopMonitoring);
+document.getElementById("download-csv").addEventListener("click", downloadRealtimeCsv);
+document.getElementById("download-pdf").addEventListener("click", downloadRealtimePdf);
+document.getElementById("download-graph").addEventListener("click", downloadRealtimeGraph);
 document.getElementById("go-history").addEventListener("click", () => {
     const appliance = applianceSelect.value;
     if (!appliance) {

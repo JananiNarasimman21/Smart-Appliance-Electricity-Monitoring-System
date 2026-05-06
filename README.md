@@ -1,75 +1,72 @@
-# ⚡ Tariff Aware Appliance Level Electricity Cost Prediction
+# Tariff Aware Appliance Level Electricity Monitoring and Billing
 
-## 📌 Project Overview
-The **Tariff Aware Appliance Level Electricity Cost Prediction System** is a real-time web application that monitors electricity usage of individual appliances and calculates the cost based on Tamil Nadu electricity tariff rules.
+## Project Overview
+The **Tariff Aware Appliance Level Electricity Monitoring and Billing System** is a real-time web application that monitors electricity usage of individual appliances and calculates cost based on Tamil Nadu electricity tariff rules.
 
-This project integrates **IoT smart plug data, dataset analysis, and tariff-based billing** to provide accurate and intelligent electricity monitoring.
+This project focuses on **live IoT smart plug readings, tariff-based billing, real-time dashboards, and SQLite-based history tracking**.
 
----
+## Features
 
-## 🚀 Features
+- Real-time power monitoring using Tapo smart plug
+- Appliance-level energy consumption tracking
+- Daily and monthly electricity cost calculation
+- Tariff-aware billing system
+- Historical usage and cost tracking from stored live readings
+- CSV and PDF report download
+- SQLite database storage
+- Simple web and Android-friendly interface
 
-✅ Real-time power monitoring using smart plug  
-✅ Appliance-level energy consumption tracking  
-✅ Daily and monthly electricity cost calculation  
-✅ Tariff-aware billing system  
-✅ Historical data analysis using REFIT dataset  
-✅ CSV report download  
-✅ SQLite database storage  
-✅ Simple and user-friendly interface  
-
----
-
-## 🛠️ Technologies Used
+## Technologies Used
 
 - Python (Flask)
 - HTML, CSS
 - SQLite Database
-- Pandas
 - python-kasa (IoT integration)
-- REFIT Dataset
+- ReportLab
+- Android app using Kotlin and Jetpack Compose
 
----
+## Project Structure
 
-## ⚙️ Project Structure
-eb_bill_project/ │ ├── app.py ├── dataset_cost.py ├── realtime_energy.py ├── tariff.py ├── energy.db │ ├── templates/ │   ├── welcome.html │   ├── instructions.html │   ├── appliance.html │   ├── datatype.html │   ├── data.html │   ├── realtime.html │ ├── static/ ├── dataset/ ├── output/ └── README.md
----
+`eb_bill_project/`
 
-## 📊 How It Works
+- `app.py`
+- `realtime_energy.py`
+- `tariff.py`
+- `energy.db`
+- `templates/`
+- `static/`
+- `android_app/`
+- `diagrams/`
+- `README.md`
 
-1. Smart plug measures real-time power consumption  
-2. Flask backend retrieves energy data  
-3. Energy is converted into kWh  
-4. Tamil Nadu tariff rules are applied  
-5. Cost is calculated automatically  
-6. Data is stored in SQLite database  
-7. Results displayed on web dashboard  
+## How It Works
 
----
+1. Tapo smart plug measures real-time power consumption.
+2. Flask backend retrieves the live device readings using `python-kasa`.
+3. Daily and monthly energy values are processed.
+4. Tamil Nadu tariff rules are applied to calculate cost.
+5. Data is stored in SQLite database.
+6. Results are displayed on the dashboard and history screens.
+7. Reports can be downloaded as CSV or PDF.
 
-## 💡 Tariff Calculation (Tamil Nadu EB)
+## Tariff Calculation (Tamil Nadu EB)
 
 | Units | Rate |
 |------|------|
-| 0–100 | Free |
-| 101–200 | ₹2.25/unit |
-| 201–400 | ₹4.5/unit |
-| 401–500 | ₹6/unit |
-| 501–600 | ₹8/unit |
-| 601–800 | ₹9/unit |
-| 801–1000 | ₹10/unit |
-| >1000 | ₹11/unit |
+| 0-100 | Free |
+| 101-200 | Rs 2.25/unit |
+| 201-400 | Rs 4.5/unit |
+| 401-500 | Rs 6/unit |
+| 501-600 | Rs 8/unit |
+| 601-800 | Rs 9/unit |
+| 801-1000 | Rs 10/unit |
+| >1000 | Rs 11/unit |
 
----
+## How to Run
 
-## ▶️ How to Run    
-python dataset_cost.py
-
-python app.py
-
-### 1️⃣ Install dependencies
+### 1. Install dependencies
 ```bash
-pip install flask pandas python-kasa
+pip install flask python-kasa reportlab
 ```
 
 ### 2. Start the Flask backend
@@ -77,36 +74,34 @@ pip install flask pandas python-kasa
 python app.py
 ```
 
-The backend now exposes Android-friendly JSON endpoints:
+The backend exposes these main JSON endpoints:
 
 - `/api/health`
 - `/api/appliances`
-- `/api/data/<appliance>/<dtype>`
 - `/api/realtime/latest`
+- `/api/power/top`
+- `/api/energy/top`
+- `/api/energy/ranking`
+- `/api/history`
 - `/livepower`
 - `/accuracy_api`
 
 ## Android App
 
-A native Android project has been added in [android_app](./android_app).
+A native Android project is available in [android_app](./android_app).
 
 ### What it includes
 
 - Kotlin + Jetpack Compose UI
 - Appliance list and report viewer
 - Real-time monitoring screen for Tapo smart plug data
-- Configurable Flask server URL so your phone can connect to your PC over Wi-Fi
+- Configurable Flask server URL for LAN access from mobile devices
 
 ### How to run the Android app
 
-1. Install Android Studio on your computer.
-2. Open the `android_app` folder in Android Studio.
-3. Let Gradle sync and install any requested SDK components.
-4. Start your Flask backend with `python app.py`.
-5. Make sure your Android phone or emulator and PC can reach each other.
-6. In the app, set the backend URL to your computer's LAN address, for example `http://192.168.1.10:5000`.
-7. Run the app on an emulator or Android phone.
-
-### Important note
-
-This environment did not have `java`, `adb`, or Android build tools installed, so the Android project files were created but the APK was not built here.
+1. Open the `android_app` folder in Android Studio.
+2. Let Gradle sync and install any requested SDK components.
+3. Start the Flask backend with `python app.py`.
+4. Connect your Android phone or emulator to the same network as your PC.
+5. Set the backend URL in the app, for example `http://192.168.1.10:5000`.
+6. Run the app on your emulator or Android phone.

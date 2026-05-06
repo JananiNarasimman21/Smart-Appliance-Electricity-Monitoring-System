@@ -1,5 +1,4 @@
 from flask import Flask, render_template, send_file, request, jsonify
-import pandas as pd
 import os
 import asyncio
 from kasa import Discover, Credentials
@@ -65,9 +64,6 @@ appliance_images = {
     "WaterMotor": "water"
 }
 
-supported_data_types = ("daily", "monthly")
-
-
 def ensure_realtime_schema(cursor):
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS realtime_energy(
@@ -107,28 +103,9 @@ def get_appliance_items():
         items.append({
             "id": appliance_id,
             "name": name,
-            "icon": appliance_images.get(name, "electrical_services"),
-            "data_types": list(supported_data_types)
+            "icon": appliance_images.get(name, "electrical_services")
         })
     return items
-
-
-def resolve_output_file(appliance, dtype):
-    if dtype not in supported_data_types:
-        return None, None
-
-    name = appliance_map.get(appliance, appliance)
-    file_path = os.path.join("output", f"{name}_{dtype}.csv")
-    return name, file_path
-
-
-def load_output_rows(appliance, dtype):
-    name, file_path = resolve_output_file(appliance, dtype)
-    if not file_path or not os.path.exists(file_path):
-        return name, None
-
-    df = pd.read_csv(file_path)
-    return name, df.to_dict(orient="records")
 
 
 def fetch_latest_realtime_row(appliance=None):
@@ -390,26 +367,6 @@ def instructions():
 def appliance():
     return render_template("appliance.html")
 
-@app.route("/datatype/<appliance>")
-def datatype(appliance):
-    return render_template("datatype.html", appliance=appliance)
-
-@app.route("/data/<appliance>/<dtype>")
-def data(appliance, dtype):
-    name, rows = load_output_rows(appliance, dtype)
-    if rows is None:
-        return f"output/{name}_{dtype}.csv not found."
-
-    return render_template("data.html", appliance=name, dtype=dtype, rows=rows)
-
-@app.route("/download/<appliance>/<dtype>")
-def download(appliance, dtype):
-    name, file_path = resolve_output_file(appliance, dtype)
-    if not file_path or not os.path.exists(file_path):
-        return f"output/{name}_{dtype}.csv not found."
-
-    return send_file(file_path, as_attachment=True)
-
 @app.route("/realtime")
 def realtime():
     appliance = request.args.get("appliance", "").strip()
@@ -437,22 +394,6 @@ def api_health():
 @app.route("/api/appliances")
 def api_appliances():
     return jsonify({"appliances": get_appliance_items()})
-
-
-@app.route("/api/data/<appliance>/<dtype>")
-def api_data(appliance, dtype):
-    name, rows = load_output_rows(appliance, dtype)
-    if rows is None:
-        return jsonify({"error": f"No {dtype} data found for {name}."}), 404
-
-    return jsonify({
-        "appliance": {
-            "id": appliance,
-            "name": name
-        },
-        "dtype": dtype,
-        "rows": rows
-    })
 
 
 @app.route("/api/realtime/latest")
